@@ -1,14 +1,19 @@
+.orderbook,
 .asks,
 .bids,
+.asks thead,
+.bids thead,
 .asks tbody,
 .bids tbody,
-.orderbook tr {
+.orderbook tr,
+.buttons {
   display: flex;
 }
 
 .orderbook,
 .orderbook th,
-.orderbook td {
+.orderbook td,
+.orderbook tr {
   flex: 1;
 }
 
@@ -18,16 +23,22 @@
   flex-direction: column;
 }
 
+.bids thead {
+  display: none;
+}
+
 .asks tbody {
   flex-direction: column-reverse;
 }
 
 .orderbook thead {
-  border-top: 1px solid #fff;
-  border-bottom: 1px solid #fff;
+  padding-bottom: 4px;
+  border-top: 1px solid #5a5f64;
+  border-bottom: 1px solid #5a5f64;
 }
 
 .orderbook tr {
+  margin-top: 4px;
   justify-content: flex-end;
 }
 
@@ -35,4 +46,139 @@
 .orderbook td {
   text-align: right;
   margin-right: 32px;
+}
+
+.orderbook tbody {
+  font-family: 'Courier New';
+}
+
+.orderbook th {
+  text-transform: uppercase;
+  font-weight: normal;
+  color: #5a5f64;
+}
+
+.asks td:first-child {
+  color: red;
+}
+
+.bids td:first-of-type {
+  color: green;
+}
+
+.name,
+.spread,
+.grouping {
+  padding: 10px 15px;
+}
+
+.spread {
+  text-align: center;
+  font-size: 14px;
+  color: #5a5f64;
+}
+
+.grouping {
+  text-align: right;
+}
+
+.grouping select {
+  font-size: 12px;
+  color: #fff;
+  background-color: #5a5f64;
+  border-radius: 5px;
+}
+
+.buttons {
+  margin: 20px 0;
+  justify-content: center;
+}
+
+.buttons button {
+  height: 35px;
+  width: 150px;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+}
+
+.toggle {
+  background-color: #503cdc;
+  margin-right: 20px;
+}
+
+.kill {
+  background-color: #ac000a;
+}
+
+@media only screen and (min-width: 1024px) {
+  .orderbook {
+    flex-direction: column;
+  }
+
+  .orderbook th,
+  .orderbook td {
+    margin-right: 48px;
+  }
+
+  .bids thead {
+    display: table-header-group;
+  }
+
+  .bids tr {
+    flex-direction: row-reverse;
+  }
+
+  .asks tbody {
+    flex-direction: column;
+  }
+}
+
+/* Grid Template Areas */
+
+.header {
+  grid-area: header;
+}
+
+.name {
+  grid-area: name;
+}
+
+.spread {
+  grid-area: spread;
+}
+
+.grouping {
+  grid-area: grouping;
+}
+
+.asks {
+  grid-area: asks;
+}
+
+.bids {
+  grid-area: bids;
+}
+
+.buttons {
+  grid-area: buttons;
+}
+
+.orderbook {
+  display: grid;
+  grid-template-areas:
+    'name name grouping'
+    'asks asks asks'
+    'spread spread spread'
+    'bids bids bids'
+    'buttons buttons buttons';
+}
+
+@media only screen and (min-width: 1024px) {
+  .orderbook {
+    grid-template-areas:
+      'name name spread spread grouping grouping'
+      'bids bids bids asks asks asks'
+      'buttons buttons buttons buttons buttons buttons';
+  }
 }

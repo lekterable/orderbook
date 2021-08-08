@@ -14,8 +14,12 @@ const Orderbook = ({ orders }: Props) => {
 
   return (
     <div className={styles.orderbook}>
-      <div>
-        <span>Orderbook</span>
+      <span className={styles.name}>Order Book</span>
+      <span className={styles.spread}>Spread:</span>
+      <div className={styles.grouping}>
+        <select>
+          <option>Group 0.50</option>
+        </select>
       </div>
       <table className={styles.asks}>
         <Head />
@@ -25,6 +29,10 @@ const Orderbook = ({ orders }: Props) => {
         <Head />
         <Transactions transactions={bids} />
       </table>
+      <div className={styles.buttons}>
+        <button className={styles.toggle}>Toggle Feed</button>
+        <button className={styles.kill}>Kill Feed</button>
+      </div>
     </div>
   )
 }
