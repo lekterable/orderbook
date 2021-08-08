@@ -1,30 +1,35 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useReducer } from 'react'
 import Head from 'next/head'
 
 import { Orderbook } from '../components'
 import { Feed } from '../libs'
 import { isBrowser, throttle } from '../utils'
 import styles from '../styles/Home.module.css'
+import { FeedType } from '../constants/enums'
+import { BTC_USD } from '../constants/products'
+import reducer from '../reducers'
+import { initialize, update } from '../actions'
 
-const feed = isBrowser ? new Feed('PI_XBTUSD') : null
+const feed = isBrowser ? new Feed(BTC_USD) : null
 
 const Home = () => {
-  const [orders, setOrders] = useState<Orders | null>(null)
-
-  const isRendered = useRef(false)
+  const [orders, dispatch] = useReducer(reducer, null)
 
   useEffect(() => {
-    const throttled = throttle((error: Error, data: ParsedData) => {
+    const subscription: Subscription = (error, data) => {
       if (error) return console.error(error)
+      if (!data) return console.error('No data received.')
 
-      if (!isRendered.current) {
-        setOrders(data)
-        return (isRendered.current = true)
+      const orders = { asks: data.asks, bids: data.bids }
+
+      if (data.type === FeedType.Snapshot) {
+        dispatch(initialize(orders))
+      } else if (data.type === FeedType.Delta) {
+        dispatch(update(orders))
       }
+    }
 
-      return feed?.unsubscribe()
-    }, 100)
-
+    const throttled = throttle(subscription, 100)
     feed?.subscribe(throttled)
 
     return () => feed?.unsubscribe()

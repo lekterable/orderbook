@@ -6,8 +6,8 @@ type Props = {
 
 const Transactions = ({ transactions }: Props) => (
   <tbody>
-    {transactions.map(([price, size, total], index) => (
-      <tr key={index}>
+    {transactions.map(([price, size, total]) => (
+      <tr key={price}>
         <td>{price}</td>
         <td>{size}</td>
         <td>{total}</td>

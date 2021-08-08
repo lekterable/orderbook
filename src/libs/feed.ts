@@ -1,16 +1,4 @@
-enum EventType {
-  Info = 'info',
-  Subscribe = 'subscribe',
-  Subscribed = 'subscribed',
-  Unsubscribe = 'unsubscribe',
-  Unsubscribed = 'unsubscribed',
-  Alert = 'alert'
-}
-
-enum FeedType {
-  Snapshot = 'book_ui_1_snapshot',
-  Delta = 'book_ui_1'
-}
+import { EventType, FeedType } from '../constants/enums'
 
 type EventData = {
   event: EventType | string
@@ -24,11 +12,6 @@ type FeedData = {
 }
 
 type Data = EventData | FeedData
-
-type Subscription = {
-  (error: Error, parsedData: null): void
-  (error: null, parsedData: ParsedData): void
-}
 
 const parseData = (data: Data): ParsedData | null => {
   switch (data.event) {
