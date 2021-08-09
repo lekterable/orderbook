@@ -29,10 +29,6 @@ const Orderbook = ({ orders }: Props) => {
         <Head />
         <Transactions transactions={bids} />
       </table>
-      <div className={styles.buttons}>
-        <button className={styles.toggle}>Toggle Feed</button>
-        <button className={styles.kill}>Kill Feed</button>
-      </div>
     </div>
   )
 }

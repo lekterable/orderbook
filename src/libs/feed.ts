@@ -1,4 +1,5 @@
 import { EventType, FeedType } from '../constants/enums'
+import { API_VERSION, URL } from '../constants/misc'
 
 type EventData = {
   event: EventType | string
@@ -36,26 +37,47 @@ const parseData = (data: Data): ParsedData | null => {
 }
 
 class Feed {
-  #socket: WebSocket
+  #socket = new WebSocket(URL)
   #product: string
   #subscription: Subscription | null
 
   constructor(product: string) {
-    this.#socket = new WebSocket('wss://www.cryptofacilities.com/ws/v1')
+    this.open()
     this.#product = product
     this.#subscription = null
+  }
+
+  open() {
+    this.#socket = new WebSocket(URL)
+  }
+
+  get isOpen() {
+    return this.#socket.readyState === WebSocket.OPEN
+  }
+
+  get product() {
+    return this.#product
+  }
+
+  set product(product: string) {
+    this.#product = product
+
+    const subscription = this.#subscription
+
+    this.unsubscribe()
+    this.open()
+
+    if (subscription) this.subscribe(subscription)
   }
 
   unsubscribe() {
     this.#subscription = null
 
-    const isOpen = this.#socket.readyState === WebSocket.OPEN
-
-    if (isOpen) {
+    if (this.isOpen) {
       this.#socket.send(
         JSON.stringify({
           event: EventType.Unsubscribe,
-          feed: 'book_ui_1',
+          feed: API_VERSION,
           product_ids: [this.#product]
         })
       )
@@ -64,13 +86,15 @@ class Feed {
   }
 
   subscribe(subscription: Subscription) {
+    if (!this.isOpen) this.open()
+
     this.#subscription = subscription
 
     this.#socket.onopen = () =>
       this.#socket.send(
         JSON.stringify({
           event: EventType.Subscribe,
-          feed: 'book_ui_1',
+          feed: API_VERSION,
           product_ids: [this.#product]
         })
       )
@@ -88,6 +112,18 @@ class Feed {
         this.#subscription(error, null)
       }
     }
+  }
+
+  error() {
+    this.#socket.send(
+      JSON.stringify({
+        event: 'error',
+        feed: API_VERSION,
+        product_ids: [this.#product]
+      })
+    )
+
+    setTimeout(() => this.unsubscribe(), 500)
   }
 }
 

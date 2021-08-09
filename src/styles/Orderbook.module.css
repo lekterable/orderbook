@@ -1,3 +1,11 @@
+/* Table */
+
+.orderbook {
+  height: 90vh;
+  max-height: 90vh;
+  overflow-y: scroll;
+}
+
 .orderbook,
 .asks,
 .bids,
@@ -5,8 +13,7 @@
 .bids thead,
 .asks tbody,
 .bids tbody,
-.orderbook tr,
-.buttons {
+.orderbook tr {
   display: flex;
 }
 
@@ -66,6 +73,8 @@
   color: green;
 }
 
+/* Header */
+
 .name,
 .spread,
 .grouping {
@@ -89,27 +98,7 @@
   border-radius: 5px;
 }
 
-.buttons {
-  margin: 20px 0;
-  justify-content: center;
-}
-
-.buttons button {
-  height: 35px;
-  width: 150px;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-}
-
-.toggle {
-  background-color: #503cdc;
-  margin-right: 20px;
-}
-
-.kill {
-  background-color: #ac000a;
-}
+/* Desktop */
 
 @media only screen and (min-width: 1024px) {
   .orderbook {
@@ -160,25 +149,20 @@
   grid-area: bids;
 }
 
-.buttons {
-  grid-area: buttons;
-}
-
 .orderbook {
   display: grid;
+  grid-auto-rows: min-content auto;
   grid-template-areas:
     'name name grouping'
     'asks asks asks'
     'spread spread spread'
-    'bids bids bids'
-    'buttons buttons buttons';
+    'bids bids bids';
 }
 
 @media only screen and (min-width: 1024px) {
   .orderbook {
     grid-template-areas:
       'name name spread spread grouping grouping'
-      'bids bids bids asks asks asks'
-      'buttons buttons buttons buttons buttons buttons';
+      'bids bids bids asks asks asks';
   }
 }
