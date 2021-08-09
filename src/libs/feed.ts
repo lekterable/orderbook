@@ -3,11 +3,12 @@ import { API_VERSION, URL } from '../constants/misc'
 import { parseData } from '../utils'
 
 class Feed {
-  #socket = new WebSocket(URL)
+  #socket: WebSocket
   #product: string
   #subscription: Subscription | null
 
   constructor(product: string) {
+    this.#socket = new WebSocket(URL)
     this.#product = product
     this.#subscription = null
   }
@@ -39,21 +40,6 @@ class Feed {
     if (subscription) this.subscribe(subscription)
   }
 
-  unsubscribe() {
-    this.#subscription = null
-
-    if (this.isOpen) {
-      this.#socket.send(
-        JSON.stringify({
-          event: EventType.Unsubscribe,
-          feed: API_VERSION,
-          product_ids: [this.#product]
-        })
-      )
-      this.close()
-    }
-  }
-
   subscribe(subscription: Subscription) {
     this.#subscription = subscription
 
@@ -78,6 +64,21 @@ class Feed {
       } catch (error) {
         this.#subscription(error, null)
       }
+    }
+  }
+
+  unsubscribe() {
+    this.#subscription = null
+
+    if (this.isOpen) {
+      this.#socket.send(
+        JSON.stringify({
+          event: EventType.Unsubscribe,
+          feed: API_VERSION,
+          product_ids: [this.#product]
+        })
+      )
+      this.close()
     }
   }
 
