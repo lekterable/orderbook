@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useReducer } from 'react'
 import Head from 'next/head'
+import throttle from 'lodash.throttle'
 
 import { Orderbook } from '../components'
 import { Feed } from '../libs'
-import { isBrowser, throttle } from '../utils'
+import { isBrowser } from '../utils'
 import styles from '../styles/Home.module.css'
 import { FeedType } from '../constants/enums'
 import { BTC_USD, ETH_USD } from '../constants/products'
 import reducer from '../reducers'
 import { initialize, update } from '../actions'
 
-const feed = isBrowser ? new Feed(BTC_USD) : null
+const feed = isBrowser() ? new Feed(BTC_USD) : null
 
 const Home = () => {
   const [orders, dispatch] = useReducer(reducer, null)
@@ -33,20 +34,26 @@ const Home = () => {
     const newProduct = feed.product === BTC_USD ? ETH_USD : BTC_USD
 
     feed.product = newProduct
+
+    if (!feed.isOpen) {
+      feed.subscribe(subscription)
+    }
   }
 
   const handleKillFeed = () => {
     if (!feed) return
 
     if (feed.isOpen) {
-      return feed.error()
+      feed.error()
+      setTimeout(() => feed.unsubscribe(), 500)
+    } else {
+      feed.open()
+      feed.subscribe(subscription)
     }
-
-    feed.subscribe(subscription)
   }
 
   useEffect(() => {
-    const throttled = throttle(subscription, 100)
+    const throttled = throttle(subscription, 50)
     feed?.subscribe(throttled)
 
     return () => feed?.unsubscribe()

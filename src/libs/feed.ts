@@ -1,40 +1,6 @@
-import { EventType, FeedType } from '../constants/enums'
+import { EventType } from '../constants/enums'
 import { API_VERSION, URL } from '../constants/misc'
-
-type EventData = {
-  event: EventType | string
-}
-
-type FeedData = {
-  event: undefined
-  feed: FeedType
-  asks: Order[]
-  bids: Order[]
-}
-
-type Data = EventData | FeedData
-
-const parseData = (data: Data): ParsedData | null => {
-  switch (data.event) {
-    case EventType.Info:
-    case EventType.Subscribed:
-      return null
-
-    case undefined: {
-      //TODO: check product id
-      const { feed: type, bids, asks } = data
-
-      if (type === FeedType.Snapshot || type === FeedType.Delta) {
-        return { type, bids, asks }
-      }
-
-      throw new Error(`Unexpected feed type \`${type}\` received.`)
-    }
-
-    default:
-      throw new Error(`Unexpected event type \`${data.event}\` received.`)
-  }
-}
+import { parseData } from '../utils'
 
 class Feed {
   #socket = new WebSocket(URL)
@@ -42,13 +8,16 @@ class Feed {
   #subscription: Subscription | null
 
   constructor(product: string) {
-    this.open()
     this.#product = product
     this.#subscription = null
   }
 
   open() {
     this.#socket = new WebSocket(URL)
+  }
+
+  close() {
+    this.#socket.close()
   }
 
   get isOpen() {
@@ -81,13 +50,11 @@ class Feed {
           product_ids: [this.#product]
         })
       )
-      this.#socket.close()
+      this.close()
     }
   }
 
   subscribe(subscription: Subscription) {
-    if (!this.isOpen) this.open()
-
     this.#subscription = subscription
 
     this.#socket.onopen = () =>
@@ -122,8 +89,6 @@ class Feed {
         product_ids: [this.#product]
       })
     )
-
-    setTimeout(() => this.unsubscribe(), 500)
   }
 }
 
